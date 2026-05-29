@@ -12,11 +12,7 @@ export const findUserById = async (id: number) => {
   return removePassword(user);
 };
 
-export const insertUser = async (
-  name: string,
-  email: string,
-  password: string,
-) => {
+export const insertUser = async (name: string, email: string) => {
   const user = await prisma.user.create({
     data: { name, email, password: "" },
   });

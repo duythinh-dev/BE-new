@@ -9,7 +9,7 @@ export const errorHandler = (
   next: NextFunction,
 ) => {
   if (err instanceof ZodError) {
-    return res.status(400).json({ message: err.errors });
+    return res.status(400).json({ message: err.issues });
   }
 
   if (err instanceof Prisma.PrismaClientKnownRequestError) {
