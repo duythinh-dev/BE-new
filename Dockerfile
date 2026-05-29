@@ -14,6 +14,7 @@ RUN npm install
 # Copy toàn bộ source code vào container
 COPY . .
 
+RUN npx prisma generate
 # Báo container sẽ lắng nghe port 3000
 EXPOSE 3000
 
