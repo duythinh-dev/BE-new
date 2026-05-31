@@ -1,4 +1,3 @@
-import { jest } from "@jest/globals";
 import prisma from "../prisma.js";
 
 export const findUserByEmail = async (email: string) => {
