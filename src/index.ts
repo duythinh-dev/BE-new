@@ -6,9 +6,12 @@ import commentRoutes from "./routes/comment.routes.js";
 import { errorHandler } from "./middlewares/error.middleware.js";
 import redis from "./redis.js";
 import { rateLimitMiddleware } from "./middlewares/rateLimit.middleware.js";
+import { startSubscriber } from "./services/notification.service.js";
 
 // Thêm dòng này sau khi import
 redis.ping().then((result) => console.log("Redis ping:", result));
+startSubscriber();
+
 const app = express();
 
 app.use(

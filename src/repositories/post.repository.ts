@@ -1,5 +1,6 @@
 import prisma from "../prisma.js";
 import redis from "../redis.js";
+import { CHANNELS, publishEvent } from "../services/notification.service.js";
 
 const CACHE_KEY = "posts:all";
 const CACHE_TTL = 60; // 60 giây
@@ -23,6 +24,8 @@ export const addPost = async (
 ) => {
   await invalidatePostCache(undefined, userId); // Xoá cache khi có thay đổi dữ liệu
 
+  await publishEvent(CHANNELS.NEW_POST, { userId, title, content });
+
   return prisma.post.create({
     data: {
       userId,
@@ -34,6 +37,8 @@ export const addPost = async (
 
 export const removePost = async (postId: number, userId: number) => {
   await invalidatePostCache(postId, userId); // Xoá cache khi có thay đổi dữ liệu
+
+  await publishEvent(CHANNELS.POST_DELETED, { postId, userId });
 
   return prisma.post.delete({
     where: { id: postId, userId },
@@ -47,6 +52,8 @@ export const updatePost = async (
   content: string,
 ) => {
   await invalidatePostCache(postId, userId); // Xoá cache khi có thay đổi dữ liệu
+
+  await publishEvent(CHANNELS.POST_UPDATED, { postId, userId, title, content });
 
   return prisma.post.update({
     where: { id: postId, userId },
