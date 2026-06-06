@@ -7,6 +7,7 @@ import { errorHandler } from "./middlewares/error.middleware.js";
 import redis from "./redis.js";
 import { rateLimitMiddleware } from "./middlewares/rateLimit.middleware.js";
 import { startSubscriber } from "./services/notification.service.js";
+import { setupSocket } from "./socket.js";
 
 // Thêm dòng này sau khi import
 redis.ping().then((result) => console.log("Redis ping:", result));
@@ -38,5 +39,7 @@ app.use("/posts", postRoutes);
 app.use("/posts/:postId/comments", commentRoutes);
 
 app.use(errorHandler); // phải để cuối cùng
-
-app.listen(3000, () => console.log("Server running on port 3000"));
+// Thay app.listen bằng httpServer
+const httpServer = setupSocket(app);
+httpServer.listen(3000, () => console.log("Server running on port 3000"));
+// app.listen(3000, () => console.log("Server running on port 3000"));

@@ -45,3 +45,5 @@ export const startSubscriber = () => {
     }
   });
 };
+
+export { subscriber };
