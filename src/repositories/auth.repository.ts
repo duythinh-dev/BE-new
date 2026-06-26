@@ -9,6 +9,7 @@ export const findUserByEmail = async (email: string) => {
       email: true,
       password: true,
       createdAt: true,
+      role: true,
     },
   });
 };
@@ -20,5 +21,19 @@ export const createUser = async (
 ) => {
   return prisma.user.create({
     data: { name, email, password },
+  });
+};
+
+export const createRefreshToken = (
+  token: string,
+  userId: number,
+  expiresAt: Date,
+) => {
+  return prisma.refreshToken.create({
+    data: {
+      token,
+      userId,
+      expiresAt,
+    },
   });
 };

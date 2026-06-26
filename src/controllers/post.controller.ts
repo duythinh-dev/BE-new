@@ -14,7 +14,7 @@ import { type AuthRequest } from "../middlewares/auth.middleware.js";
 
 // Post-related controllers
 export const createPostController = async (req: AuthRequest, res: Response) => {
-  const userId = req.userId;
+  const userId = req.user?.userId;
   const { title, content } = req.body;
   if (
     typeof userId !== "number" ||
@@ -39,7 +39,7 @@ export const createPostController = async (req: AuthRequest, res: Response) => {
 
 export const deletePostController = async (req: AuthRequest, res: Response) => {
   const postId = Number(req.params.postId);
-  const userId = req.userId;
+  const userId = req.user?.userId;
   if (
     Number.isNaN(postId) ||
     typeof userId !== "number" ||
@@ -70,7 +70,7 @@ export const deletePostController = async (req: AuthRequest, res: Response) => {
 export const updatePostController = async (req: AuthRequest, res: Response) => {
   const postId = Number(req.params.postId);
   const { title, content } = req.body;
-  const userId = req.userId;
+  const userId = req.user?.userId;
 
   if (
     Number.isNaN(postId) ||
@@ -103,7 +103,7 @@ export const getUserPostsController = async (
   req: AuthRequest,
   res: Response,
 ) => {
-  const userId = req.userId;
+  const userId = req.user?.userId;
   if (typeof userId !== "number" || Number.isNaN(userId)) {
     return res.status(400).json({ message: "Invalid user id" });
   }

@@ -14,7 +14,7 @@ export const createCommentController = async (
   req: AuthRequest,
   res: Response,
 ) => {
-  const userId = req.userId;
+  const userId = req.user?.userId;
   const { content } = req.body;
   const postId = Number(req.params.postId);
   if (
@@ -60,7 +60,7 @@ export const deleteCommentController = async (
   res: Response,
 ) => {
   const commentId = Number(req.params.commentId);
-  const userId = req.userId;
+  const userId = req.user?.userId;
   if (
     Number.isNaN(commentId) ||
     typeof userId !== "number" ||
@@ -96,7 +96,7 @@ export const updateCommentController = async (
 ) => {
   const commentId = Number(req.params.commentId);
   const { content } = req.body;
-  const userId = req.userId;
+  const userId = req.user?.userId;
 
   if (
     Number.isNaN(commentId) ||
