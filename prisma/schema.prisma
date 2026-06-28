@@ -20,7 +20,12 @@ model User {
   posts         Post[]
   comments      Comment[]
   refreshTokens RefreshToken[]
+
   likes Like[]
+
+  followers Follow[] @relation("UserFollowers")
+
+  following Follow[] @relation("UserFollowing")
 
   role Role @default(USER)
 }
@@ -31,7 +36,7 @@ model Post {
   content   String
   createdAt DateTime  @default(now())
   userId    Int
-  user      User      @relation(fields: [userId], references: [id])
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   comments  Comment[]
   likes Like[]
 }
@@ -42,17 +47,18 @@ model Comment {
   createdAt DateTime @default(now())
   userId    Int
   postId    Int
-  user      User     @relation(fields: [userId], references: [id])
-  post      Post     @relation(fields: [postId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
 }
 
 model RefreshToken {
   id        Int      @id @default(autoincrement())
   token     String   @unique
   userId    Int
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   expiresAt DateTime
   createdAt DateTime @default(now())
+
 }
 
 model Like {
@@ -67,4 +73,23 @@ model Like {
   createdAt DateTime @default(now())
 
   @@unique([userId, postId])
+}
+
+model Follow {
+  id      Int    @id @default(autoincrement())
+
+  followerId Int
+  followingId Int
+
+  follower      User @relation("UserFollowing", fields: [followerId], references: [id], onDelete: Cascade)
+  followingUser User @relation("UserFollowers", fields: [followingId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([followerId, followingId])
+
+  @@index([followerId])
+
+  @@index([followingId])
+
 }

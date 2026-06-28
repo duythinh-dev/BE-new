@@ -5,13 +5,17 @@ const removePassword = (user: any) => {
   return rest;
 };
 
-export const findUserById = async (id: number) => {
-  const user = await prisma.user.findUnique({
-    where: { id },
+export const findUserById = (userId: number) => {
+  return prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+    select: {
+      id: true,
+      name: true,
+    },
   });
-  return removePassword(user);
 };
-
 export const insertUser = async (name: string, email: string) => {
   const user = await prisma.user.create({
     data: { name, email, password: "" },

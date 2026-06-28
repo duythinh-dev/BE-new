@@ -38,7 +38,7 @@ export const register = async (
   password: string,
 ) => {
   const existing = await findUserByEmail(email);
-  if (existing) throw new Error("Email already exists");
+  if (existing) return { error: "Email already exists" };
 
   const hashed = await bcrypt.hash(password, 10);
   console.log("Creating user with:", { name, email, hashed }); // thêm dòng này
@@ -49,10 +49,10 @@ export const register = async (
 
 export const login = async (email: string, password: string) => {
   const user = await findUserByEmail(email);
-  if (!user) throw new Error("Invalid credentials");
+  if (!user) return { error: "Invalid email or password" };
 
   const valid = await bcrypt.compare(password, user.password);
-  if (!valid) throw new Error("Invalid credentials");
+  if (!valid) return { error: "Invalid email or password" };
 
   const accessToken = generateAccessToken(user.id, user.role);
   const refreshToken = generateRefreshToken(user.id);
@@ -75,11 +75,11 @@ export const refreshAccessToken = async (refreshToken: string) => {
     const payload = jwt.verify(refreshToken, JWT_REFRESH_SECRET!) as JwtPayload;
 
     if (payload.type !== "refresh") {
-      throw new Error("Invalid token");
+      return { error: "Invalid token type" };
     }
   } catch (err) {
     console.error("Refresh token verification failed:", err);
-    throw new Error("Refresh token expired");
+    return { error: "Refresh token expired" };
   }
 
   const foundToken = await prisma.refreshToken.findUnique({
@@ -92,7 +92,7 @@ export const refreshAccessToken = async (refreshToken: string) => {
   });
 
   if (!foundToken) {
-    throw new Error("Unauthorized");
+    return { error: "Unauthorized" };
   }
 
   const accessToken = generateAccessToken(
@@ -131,7 +131,7 @@ export const logout = async (refreshToken: string) => {
   });
 
   if (deleted.count === 0) {
-    throw new Error("Refresh token not found");
+    return { error: "Refresh token not found" };
   }
 
   return {
@@ -147,7 +147,7 @@ export const logoutAllDevices = async (userId: number) => {
   });
 
   if (deleted.count === 0) {
-    throw new Error("No refresh tokens found for this user");
+    return { error: "No refresh tokens found for this user" };
   }
 
   return {

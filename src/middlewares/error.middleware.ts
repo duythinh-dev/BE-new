@@ -1,24 +1,23 @@
-import { type Request, type Response, type NextFunction } from "express";
-import { ZodError } from "zod";
-import { Prisma } from "@prisma/client";
+import type { Request, Response, NextFunction } from "express";
+import { AppError } from "../errors/AppError.js";
 
 export const errorHandler = (
-  err: any,
+  err: Error,
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
-  if (err instanceof ZodError) {
-    return res.status(400).json({ message: err.issues });
+  if (err instanceof AppError) {
+    return res.status(err.statusCode).json({
+      success: false,
+      message: err.message,
+    });
   }
 
-  if (err instanceof Prisma.PrismaClientKnownRequestError) {
-    if (err.code === "P2002") {
-      return res.status(409).json({ message: "Email already exists" });
-    }
-  }
+  console.error(err);
 
-  const status = err.status || 500;
-  const message = err.message || "Internal server error";
-  res.status(status).json({ message });
+  return res.status(500).json({
+    success: false,
+    message: "Internal Server Error",
+  });
 };
